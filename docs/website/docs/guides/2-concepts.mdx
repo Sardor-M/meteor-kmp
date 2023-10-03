@@ -1,0 +1,51 @@
+---
+title: Core Concepts
+---
+
+## Store
+
+The store is a container in Meteor. It is responsible for managing the state, handling state changes, and coordinating the flow of actions and effects within your application
+
+```kt
+public interface Store<State : Any, Wish : Any, Effect : Any> {
+    public val state: StateFlow<State>
+    public val currentState: State
+    public val effect: Flow<Effect>
+    public suspend fun wish(wish: Wish)
+    public fun cancel()
+}
+```
+## Reducer
+
+A reducer is a pure function that takes the current state and an action as input and produces a new state as output. In Meteor, the Reducer is responsible for determining how the state should change based on the dispatched actions. Reducers are defined using the Reducer interface and implement the reduce function. Within the reduce function, you can use pattern matching or conditional statements to handle different actions and update the state accordingly.
+
+```kt
+public interface Reducer<State : Any, Wish : Any, Effect : Any> {
+    public fun reduce(state: State, wish: Wish): Change<State, Effect>
+}
+
+```
+## Middleware
+
+Middleware in Meteor provides a way to intercept actions before they reach the reducer and perform additional logic or side effects. It allows you to modify the action, dispatch new actions, or handle asynchronous operations. Middleware sits between the action dispatch and the reducer and can be used to implement features such as logging, error handling, or network requests.
+
+```kt
+public interface Middleware<State : Any, Wish : Any> {
+    public suspend fun process(state: State, wish: Wish, next: suspend (Wish) -> Unit)
+}
+```
+## MeteorConfigs
+
+The `MeteorConfigs` interface provides a set of configurations to customize the behavior of the Meteor store. These configurations include the initial state, store name, dispatchers, reducer, middleware, and interceptor. You can use the Builder class and the build function to create an instance of MeteorConfigs with the desired settings.
+
+```kt
+public interface MeteorConfigs<State : Any, Wish : Any, Effect : Any> {
+    public val initialState: State
+    public val storeName: String
+    public val mainDispatcher: CoroutineDispatcher
+    public val ioDispatcher: CoroutineDispatcher
+    public val reducer: Reducer<State, Wish, Effect>
+    public val middleware: Middleware<State, Wish>
+    public val interceptor: Interceptor<State, Wish, Effect>
+}
+```

@@ -1,0 +1,89 @@
+---
+title: Meteor
+sidebar_label: Home
+slug: /
+---
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+Meteor is a simple framework that helps you to create application using the MVI architecture. It provides a robust structure for organizing your code and separating concerns. Additionally, Meteor integrates with Kotlin Coroutine that helps you to write asynchronous and concurrent code.
+
+## Features
+
+- Meteor follows the Model-View-Intent (MVI) architecture pattern.
+- It provides a unidirectional data flow (UDF), allowing you to handle state changes and propagate them to the UI efficiently.
+- Supports Kotlin Coroutines: asynchronous and concurrent code in a more concise and structured way.
+- Meteor supports Kotlin Multiplatform, allowing you to share code across multiple platforms.
+- Easy to test (integration and unit  tests).
+- Additional features like common use cases, state flow, view model and logger.
+<!-- - Effortless, customizable recording - use our built-in templates or record your own web UI -->
+
+
+## Why Meteor?
+
+Meteor simplifies application development by providing a clear structure and separation of concerns through the MVI architecture, making your codebase more maintainable and organized.
+
+With Kotlin Multiplatform support, Meteor enables code sharing across different platforms, reducing duplication and maximizing code reuse, ultimately saving development time and effort.
+
+Meteor's reactive state management mechanism simplifies the handling of application state. It enables you to manage state changes efficiently and ensures that your UI remains synchronized with the underlying data.
+
+## Architecture
+
+Model-View-Intent is an architectural pattern used in software development, particularly in user interface (UI) design. It is commonly applied in the context of reactive and functional programming paradigms.
+
+The `MVI` pattern aims to provide a clear separation of concerns and a unidirectional data flow within an application.
+
+## Examples
+
+<Tabs
+  defaultValue="kotlin"
+  groupId="meteor-architecture"
+  values={[
+    {label: 'Kotlin', value: 'kotlin'}
+  ]}>
+
+  <TabItem value="kotlin">
+
+
+```kt
+
+class MainViewModel : CommonViewModel<CountState, CountWish, CountEffect>() {
+
+    override val store: Store<CountState, CountWish, CountEffect> = createMeteor(
+        configs = MeteorConfigs.build {
+            initialState = CountState.Empty
+            storeName = "MainViewModel"
+            reducer = CountReducer
+            middleware = CountMiddleware
+        }
+    )
+
+    val effect: NonNullCommonFlow<CountEffect> = store.effect.asCommonFlow()
+    val state: NonNullCommonStateFlow<CountState> = store.state.asCommonStateFlow()
+}
+
+object CountReducer : Reducer<CountState, CountWish, CountEffect> {
+
+    override fun reduce(state: CountState, wish: CountWish): Change<CountState, CountEffect> {
+        return when (wish) {
+            CountWish.Decrease -> {
+                expect { state.copy(count = state.count - 1) }
+            }
+            CountWish.Increase -> {
+                expect { state.copy(count = state.count + 1) }
+            }
+            CountWish.Reset -> {
+                expect { state.copy(count = 0) }
+            }
+            CountWish.ZeroValue -> {
+                effect {
+                    CountEffect.Failure("The value is zero")
+                }
+            }
+        }
+    }
+}
+```
+
+  </TabItem>
+</Tabs>
